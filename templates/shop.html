@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PFYHD-CVV & KYM-ECC Secure Commerce - Shop</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f8fa; margin: 0; padding: 0; }
+        .banner { background: #1B2A4A; color: white; padding: 8px 20px; font-size: 12px; text-align: center; }
+
+        .navbar { background: white; padding: 14px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 8px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 50; }
+        .navbar .logo { font-size: 22px; font-weight: 800; color: #0E7C7B; }
+        .navbar .user { font-size: 13px; color: #444; }
+        .navbar .user b { color: #1B2A4A; }
+
+        .hero { background: linear-gradient(135deg, #1B2A4A, #0E7C7B); color: white; padding: 28px 30px; text-align: center; }
+        .hero h1 { margin: 0 0 6px; font-size: 24px; }
+        .hero p { margin: 0; font-size: 13px; opacity: 0.9; }
+
+        .content { max-width: 1150px; margin: 0 auto; padding: 24px 20px 110px; }
+
+        .secure-toggle { padding: 14px 18px; background: white; border-radius: 8px; margin-bottom: 22px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        .secure-toggle label.title { font-size: 13px; font-weight: 700; color: #1B2A4A; display:block; margin-bottom: 8px;}
+        .secure-toggle label { font-size: 13px; margin-right: 24px; color: #333; cursor: pointer; }
+
+        .count-badge { color: #777; font-size: 13px; margin-bottom: 16px; }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+        .product-card {
+            border: 2px solid #eee;
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            transition: box-shadow 0.15s, transform 0.15s, border-color 0.15s;
+            background: #fff;
+            cursor: pointer;
+            position: relative;
+            display: block;
+        }
+        .product-card:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.1); transform: translateY(-2px); }
+        .product-card.selected { border-color: #0E7C7B; background: #F0F9F8; }
+        .product-checkbox { position: absolute; top: 10px; left: 10px; width: 18px; height: 18px; cursor: pointer; }
+        .product-emoji { font-size: 34px; margin-bottom: 8px; }
+        .product-name { font-weight: 600; color: #333; font-size: 13.5px; min-height: 36px; }
+        .product-price { color: #0E7C7B; font-weight: 700; font-size: 15px; margin: 8px 0; }
+
+        .cart-bar {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background: #1B2A4A; color: white; padding: 16px 30px;
+            display: flex; justify-content: space-between; align-items: center;
+            box-shadow: 0 -4px 20px rgba(0,0,0,0.15); z-index: 100;
+        }
+        .cart-summary { font-size: 14px; }
+        .cart-summary .count { font-weight: 700; }
+        .cart-total { font-size: 20px; font-weight: 700; margin-left: 24px; color: #7fd9d6; }
+        .checkout-btn { background: #0E7C7B; color: white; border: none; padding: 12px 28px; border-radius: 6px; cursor: pointer; font-weight: 700; font-size: 15px; }
+        .checkout-btn:hover:not(:disabled) { background: #0a5f5e; }
+        .checkout-btn:disabled { background: #555; cursor: not-allowed; opacity: 0.6; }
+        .cart-left { display: flex; align-items: center; }
+    </style>
+</head>
+<body>
+    <div class="banner">ACADEMIC DEMO &mdash; Fake test data only. Payment step uses Stripe TEST mode (no real charges).</div>
+    <div class="navbar">
+        <div class="logo">🛒 PFYHD-CVV & KYM-ECC Secure Commerce</div>
+        <div class="user">Signed in as <b>{{ username }}</b></div>
+    </div>
+    <div class="hero">
+        <h1>Browse Products</h1>
+        <p style="font-weight:600;">"A Cryptographic Approach to Privacy-Preserving Credit Card Security Using PFYHD-CVV and KYM-ECC"</p>
+        <p>Select multiple items, then check out securely with your privacy-preserving payment framework</p>
+    </div>
+
+    <div class="content">
+        <div class="secure-toggle">
+            <label class="title">Simulate checkout page security (applies to your whole cart):</label>
+            <label><input type="radio" name="secureGlobal" value="yes" checked onclick="setSecure('yes')"> HTTPS (secure) &mdash; RS2C not needed</label>
+            <label><input type="radio" name="secureGlobal" value="no" onclick="setSecure('no')"> HTTP (insecure) &mdash; triggers RS2C IP spoofing</label>
+            <div style="font-size:11px;color:#999;margin-top:8px;font-style:italic;">
+                Note: This is a manual simulation toggle. On a real deployed site with
+                genuine HTTPS, this would be detected automatically via
+                <code>request.is_secure</code> &mdash; not needed as a manual choice.
+                Your actual current connection's real detected status:
+                <b>{{ "Secure (HTTPS)" if real_https else "Not Secure (HTTP)" }}</b>
+            </div>
+        </div>
+
+        <div class="count-badge">{{ products|length }} products available &mdash; select as many as you like</div>
+
+        <form id="cartForm" method="POST" action="/checkout">
+            <input type="hidden" name="secure" id="secureInput" value="yes">
+            <div class="product-grid">
+                {% for p in products %}
+                <label class="product-card" id="card-{{ loop.index }}">
+                    <input type="checkbox" class="product-checkbox" name="cart_product" value="{{ p.name }}"
+                           data-price="{{ p.price }}" onchange="updateCart(this, {{ loop.index }})">
+                    <input type="hidden" class="cart-price-field" name="cart_price" value="{{ p.price }}" disabled data-idx="{{ loop.index }}">
+                    <div class="product-emoji">{{ p.emoji }}</div>
+                    <div class="product-name">{{ p.name }}</div>
+                    <div class="product-price">&#8377;{{ p.price|inr }}</div>
+                </label>
+                {% endfor %}
+            </div>
+        </form>
+    </div>
+
+    <div class="cart-bar">
+        <div class="cart-left">
+            <div class="cart-summary"><span class="count" id="itemCount">0</span> items selected</div>
+            <div class="cart-total" id="cartTotal">&#8377;0.00</div>
+        </div>
+        <button type="submit" form="cartForm" class="checkout-btn" id="checkoutBtn" disabled>Proceed to Checkout</button>
+    </div>
+
+    <script>
+        function formatINR(num) {
+            const parts = num.toFixed(2).split('.');
+            let whole = parts[0];
+            const dec = parts[1];
+            let lastThree = whole.slice(-3);
+            let rest = whole.slice(0, -3);
+            if (rest !== '') { lastThree = ',' + lastThree; }
+            let formatted = rest.replace(/\B(?=(\d{2})+(?!\d))/g, ',') + lastThree;
+            return '\u20B9' + formatted + '.' + dec;
+        }
+        function setSecure(val) { document.getElementById('secureInput').value = val; }
+        function updateCart(checkbox, idx) {
+            const card = document.getElementById('card-' + idx);
+            const priceField = document.querySelector('.cart-price-field[data-idx="' + idx + '"]');
+            card.classList.toggle('selected', checkbox.checked);
+            priceField.disabled = !checkbox.checked;
+            const checked = document.querySelectorAll('.product-checkbox:checked');
+            let total = 0;
+            checked.forEach(function(cb) { total += parseFloat(cb.dataset.price); });
+            document.getElementById('itemCount').textContent = checked.length;
+            document.getElementById('cartTotal').textContent = formatINR(total);
+            document.getElementById('checkoutBtn').disabled = checked.length === 0;
+        }
+    </script>
+</body>
+</html>

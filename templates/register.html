@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PFYHD-CVV & KYM-ECC Secure Commerce - Create Account</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f8fa; margin: 0; padding: 30px; }
+        .banner { background: #1B2A4A; color: white; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 13px; text-align: center; max-width: 560px; margin-left: auto; margin-right: auto; }
+        .container { max-width: 560px; margin: 0 auto; background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        .logo { text-align: center; font-size: 26px; font-weight: 800; color: #0E7C7B; margin-bottom: 4px; }
+        h1 { color: #1B2A4A; font-size: 20px; margin-bottom: 5px; text-align: center; }
+        .subtitle { color: #777; font-size: 13px; margin-bottom: 28px; text-align: center; }
+        .eq-note { background: #F0F9F8; border-left: 3px solid #0E7C7B; padding: 10px 14px; font-size: 11.5px; color: #1B2A4A; margin-bottom: 24px; border-radius: 0 6px 6px 0; font-family: 'Courier New', monospace; }
+        .field-row { display: flex; gap: 12px; }
+        .field-row > div { flex: 1; }
+        label { display: block; margin-top: 14px; font-size: 12.5px; color: #444; font-weight: 700; }
+        label .h-tag { color: #0E7C7B; font-weight: 700; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        button { width: 100%; margin-top: 26px; padding: 13px; background: #0E7C7B; color: white; border: none; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; }
+        button:hover { background: #0a5f5e; }
+        .badge { display: inline-block; background: #FDE9D8; color: #b5651d; padding: 2px 8px; border-radius: 10px; font-size: 10px; margin-left: 4px; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="banner">ACADEMIC DEMO &mdash; Fake test data only. No real payment processing.</div>
+    <div class="container">
+        <div class="logo">🛒 PFYHD-CVV & KYM-ECC Secure Commerce</div>
+        <h1>Create Your Account</h1>
+        <div class="subtitle">Privacy-Preserving Credit Card Security Framework</div>
+
+        <div class="eq-note">
+            H = (H&sup1;, H&sup2;, H&sup3;, H&sup4;, H&sup5;, H&sup6;, H&sup7;) &mdash; Eq. (1), Section 3.2
+        </div>
+
+        <form method="POST">
+            <label><span class="h-tag">H&sup1;</span> Username</label>
+            <input type="text" name="username" value="priya_demo" required>
+
+            <label><span class="h-tag">H&sup2;</span> Identity (ID) Number</label>
+            <input type="text" name="id_number" value="ID-2026-88431" required>
+
+            <div class="field-row">
+                <div>
+                    <label><span class="h-tag">H&sup3;</span> Age</label>
+                    <input type="number" name="age" value="27" min="18" max="100" required>
+                </div>
+                <div>
+                    <label><span class="h-tag">H&sup4;</span> Sex</label>
+                    <select name="sex" required>
+                        <option value="F" selected>Female</option>
+                        <option value="M">Male</option>
+                        <option value="O">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <label><span class="h-tag">H&sup5;</span> Address</label>
+            <input type="text" name="address" value="221B Anna Salai, Chennai, TN 600002" required>
+
+            <label><span class="h-tag">H&sup6;</span> 16-Digit Credit Card Number <span class="badge">FAKE TEST DATA</span></label>
+            <input type="text" name="card_number" value="4242 4242 4242 4242" required>
+
+            <label><span class="h-tag">H&sup7;</span> 3-Digit CVV <span class="badge">FAKE TEST DATA</span></label>
+            <input type="text" name="cvv" value="738" maxlength="4" required>
+
+            <button type="submit">Register &amp; Continue to Shop</button>
+        </form>
+    </div>
+</body>
+</html>

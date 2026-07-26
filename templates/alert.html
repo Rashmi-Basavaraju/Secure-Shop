@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security Alert - PFYHD-CVV & KYM-ECC Secure Commerce</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f8fa; margin: 0; padding: 40px; }
+        .container { max-width: 560px; margin: 0 auto; background: white; padding: 36px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border-top: 6px solid #B23A2E; }
+        .alert-icon { font-size: 48px; text-align: center; margin-bottom: 10px; }
+        h1 { color: #B23A2E; font-size: 20px; text-align: center; margin-bottom: 6px; }
+        .eq-tag { text-align: center; font-family: 'Courier New', monospace; font-size: 12px; color: #777; margin-bottom: 22px; }
+        .message { background: #fbe6e6; border-left: 4px solid #B23A2E; padding: 14px 18px; border-radius: 0 8px 8px 0; font-size: 13.5px; color: #333; margin-bottom: 22px; line-height: 1.5; }
+        .detail-box { background: #F2F4F7; padding: 14px 18px; border-radius: 8px; font-size: 12.5px; color: #555; margin-bottom: 22px; }
+        .detail-box b { color: #1B2A4A; }
+        .btn-row { display: flex; gap: 12px; }
+        button { flex: 1; padding: 13px; border: none; border-radius: 6px; font-size: 14.5px; font-weight: 700; cursor: pointer; }
+        .btn-cancel { background: #eee; color: #333; }
+        .btn-cancel:hover { background: #ddd; }
+        .btn-continue { background: #0E7C7B; color: white; }
+        .btn-continue:hover { background: #0a5f5e; }
+        .auto-note { font-size: 11px; color: #999; text-align: center; margin-top: 18px; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="alert-icon">&#9888;&#65039;</div>
+        <h1>Security Message Alert</h1>
+        <div class="eq-tag">Eq. (27)-(28) &mdash; RS2C / IP Spoofing-based Privacy Preservation</div>
+
+        <div class="message">
+            <b>This checkout page is NOT secure.</b> The connection does not use HTTPS,
+            meaning your network address could be visible to anyone intercepting this
+            connection (a Man-in-the-Middle attack).
+        </div>
+
+        <div class="detail-box">
+            <b>What happens if you continue:</b> RS2C will spoof your real IP address
+            using Right-Shift and 2's-Complement transformation before proceeding,
+            reducing (but not eliminating) this risk.<br><br>
+            <b>What happens if you cancel:</b> Your transaction stops here immediately.
+            No card details are processed.
+        </div>
+
+        <form method="POST" action="/checkout">
+            {% for name, p in items %}
+            <input type="hidden" name="cart_product" value="{{ name }}">
+            <input type="hidden" name="cart_price" value="{{ p }}">
+            {% endfor %}
+            <input type="hidden" name="secure" value="no">
+            <input type="hidden" name="confirmed" value="yes">
+            <div class="btn-row">
+                <button type="submit" formaction="/cancel-transaction" class="btn-cancel">Cancel Transaction</button>
+                <button type="submit" class="btn-continue">Continue Anyway</button>
+            </div>
+        </form>
+
+        <div class="auto-note">
+            Automatic HTTPS detection (request.is_secure) reports this connection as:
+            <b>{{ "Secure" if auto_detected else "Not Secure" }}</b>
+            (real browser-level check, separate from the simulation toggle)
+        </div>
+    </div>
+</body>
+</html>

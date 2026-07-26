@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PFYHD-CVV & KYM-ECC Secure Commerce - Order Result</title>
+    <style>
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f8fa; margin: 0; padding: 30px; }
+        .banner { background: #1B2A4A; color: white; padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 12px; text-align: center; max-width: 820px; margin-left: auto; margin-right: auto; }
+        .container { max-width: 820px; margin: 0 auto; background: white; padding: 34px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h1 { color: #1B2A4A; font-size: 22px; margin-bottom: 4px; }
+
+        .status-success { background: #e6f7ea; color: #1a7a3c; padding: 14px 18px; border-radius: 8px; font-weight: 700; margin-bottom: 22px; }
+        .status-fail { background: #fbe6e6; color: #b23a2e; padding: 14px 18px; border-radius: 8px; font-weight: 700; margin-bottom: 22px; }
+
+        .section-title { font-size: 14px; font-weight: 800; color: #1B2A4A; margin: 26px 0 10px; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 2px solid #F0F9F8; padding-bottom: 6px; }
+
+        .receipt-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+        .receipt-table th { text-align: left; color: #777; font-size: 11px; text-transform: uppercase; padding: 6px 4px; border-bottom: 1px solid #eee; }
+        .receipt-table td { padding: 8px 4px; border-bottom: 1px solid #f4f4f4; }
+        .receipt-table .price-col { text-align: right; }
+        .receipt-total-row td { font-weight: 800; font-size: 15px; color: #0E7C7B; border-top: 2px solid #1B2A4A; padding-top: 10px; }
+
+        .reg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 20px; font-size: 12.5px; color: #444; }
+        .reg-grid b { color: #1B2A4A; }
+
+        .step { border-left: 4px solid #0E7C7B; background: #F2F4F7; padding: 12px 16px; margin-bottom: 10px; border-radius: 0 8px 8px 0; }
+        .step-title { font-weight: 700; color: #1B2A4A; font-size: 13.5px; }
+        .step-detail { font-family: 'Courier New', monospace; font-size: 12px; color: #333; margin-top: 5px; word-break: break-all; }
+        .step-time { color: #0E7C7B; font-size: 10.5px; font-weight: 700; margin-top: 5px; }
+        .substeps { font-size: 10.5px; color: #777; margin-top: 6px; font-family: monospace; }
+
+        .total-time { background: #1B2A4A; color: white; padding: 16px; border-radius: 8px; text-align: center; font-size: 17px; font-weight: 700; margin: 18px 0; }
+        .chart-box { text-align: center; margin: 14px 0; }
+        .chart-box img { max-width: 100%; border-radius: 8px; border: 1px solid #eee; }
+
+        a.back { display: inline-block; margin-top: 22px; color: #0E7C7B; text-decoration: none; font-weight: 700; }
+    </style>
+</head>
+<body>
+    <div class="banner">ACADEMIC DEMO &mdash; Fake test data only. No real payment processing.</div>
+    <div class="container">
+        <h1>Order {{ "Confirmed" if success else "Blocked" }}</h1>
+
+        {% if success %}
+        <div class="status-success">Purchase Successful &mdash; {{ items|length }} item(s), Total &#8377;{{ price|inr }}</div>
+        {% else %}
+        <div class="status-fail">{{ message }}</div>
+        {% endif %}
+
+        {% if success %}
+        <div class="section-title">Order Summary</div>
+        <table class="receipt-table">
+            <tr><th>Item</th><th class="price-col">Price</th></tr>
+            {% for name, p in items %}
+            <tr><td>{{ name }}</td><td class="price-col">&#8377;{{ p|inr }}</td></tr>
+            {% endfor %}
+            <tr class="receipt-total-row"><td>Total</td><td class="price-col">&#8377;{{ price|inr }}</td></tr>
+        </table>
+
+        <div class="section-title">Registration Details Used (Eq. 1, Section 3.2)</div>
+        <div class="reg-grid">
+            <div><b>H&sup1; Username:</b> {{ reg.username }}</div>
+            <div><b>H&sup2; ID Number:</b> {{ reg.id_number }}</div>
+            <div><b>H&sup3; Age:</b> {{ reg.age }}</div>
+            <div><b>H&sup4; Sex:</b> {{ reg.sex }}</div>
+            <div><b>H&sup5; Address:</b> {{ reg.address }}</div>
+            <div><b>H&sup6; Card Number:</b> {{ reg.card_number }}</div>
+        </div>
+        {% endif %}
+
+        <div class="section-title">Security Pipeline &mdash; Step-by-Step Log</div>
+        {% for title, detail, ms, substeps in log %}
+        <div class="step">
+            <div class="step-title">{{ title }}</div>
+            <div class="step-detail">{{ detail }}</div>
+            {% if ms > 0 %}<div class="step-time">{{ "%.4f"|format(ms) }} ms</div>{% endif %}
+            {% if substeps %}
+            <div class="substeps">{% for s in substeps %}{{ s }}<br>{% endfor %}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+
+        {% if success %}
+        <div class="total-time">Total Pipeline Time: {{ "%.4f"|format(total_time) }} ms</div>
+
+        <div class="section-title">Timing Breakdown (Graph)</div>
+        <div class="chart-box">
+            <img src="data:image/png;base64,{{ chart_b64 }}" alt="Pipeline timing chart">
+        </div>
+
+        <div class="section-title">Proposed Framework vs. Existing Methods (Whole System)</div>
+        <p style="font-size:12.5px;color:#555;">
+            This compares your COMPLETE framework as one system against existing
+            whole-system approaches from your paper's Table 4 &mdash; not broken
+            down by individual objective.
+        </p>
+
+        <table class="receipt-table">
+            <tr><th>Method</th><th class="price-col">Security Level</th></tr>
+            {% for name, val in table4_comparison %}
+            <tr><td>{{ name }}</td><td class="price-col">{{ "%.2f"|format(val) + "%" if val is not none else "Not Reported" }}</td></tr>
+            {% endfor %}
+        </table>
+        <div class="chart-box"><img src="data:image/png;base64,{{ table4_chart_b64 }}" alt="Table 4 whole-system comparison chart"></div>
+
+        <div style="background:#F0F9F8;border-left:4px solid #0E7C7B;padding:16px 20px;margin:18px 0;border-radius:0 8px 8px 0;">
+            <div style="font-size:13px;font-weight:800;color:#1B2A4A;margin-bottom:8px;">AGGREGATED RESULT</div>
+            <div style="font-size:14px;color:#333;">
+                Proposed Framework: <b style="color:#0E7C7B;">{{ "%.2f"|format(aggregated_proposed) }}%</b><br>
+                Existing Methods (Average of reported): <b style="color:#555;">{{ "%.2f"|format(aggregated_existing) }}%</b><br>
+                <span style="color:#1a7a3c;font-weight:700;">Winner: Proposed Framework (+{{ "%.2f"|format(aggregated_proposed - aggregated_existing) }} percentage points)</span>
+            </div>
+        </div>
+        <div class="chart-box"><img src="data:image/png;base64,{{ aggregated_chart_b64 }}" alt="Aggregated proposed vs existing chart"></div>
+
+        <h3 style="font-size:13px;color:#0E7C7B;margin-top:26px;">Live Timing: Proposed Framework vs. Existing Methods (Real Implementations)</h3>
+        <p style="font-size:11.5px;color:#777;">
+            Real, running implementations of each existing method's CORE mechanism &mdash;
+            not simplified stand-ins. TDCB-D3P-style uses real hash-chain + voting
+            consensus; EMV-style uses real RSA-signed Dynamic Data Authentication;
+            PSD2-style uses real HMAC-based Strong Customer Authentication;
+            FFX uses a real Feistel network. All measured live, right now, against
+            your actual card data.
+        </p>
+        <table class="receipt-table">
+            <tr><th>Technique</th><th class="price-col">Time (ms)</th></tr>
+            {% for name, t in whole_system_live %}
+            <tr><td>{{ name }}</td><td class="price-col">{{ "%.4f"|format(t) }}</td></tr>
+            {% endfor %}
+        </table>
+        <div class="chart-box"><img src="data:image/png;base64,{{ whole_system_live_chart_b64 }}" alt="Whole system live timing chart"></div>
+        {% endif %}
+
+        <a class="back" href="/shop">&larr; Back to Shop</a>
+    </div>
+</body>
+</html>
