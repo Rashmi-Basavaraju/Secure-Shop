@@ -7,6 +7,7 @@ No real payments are ever processed. Requires your own free Stripe
 test-mode secret key, set as an environment variable (see README).
 """
 from flask import Flask, render_template, request, session, redirect, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 import secrets
 import struct
 import socket
@@ -588,7 +589,8 @@ PRODUCTS = [
 ]
 
 app = Flask(__name__)
-app.secret_key = secrets.token_hex(16)
+app.wsgi_app=ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
+app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'pfyhd-cvv-kym-ecc-demo-fixed-key-2026-do-not-use-in-real-production')
 app.jinja_env.filters['inr'] = format_inr
 
 # ============ CORE FRAMEWORK FUNCTIONS ============
